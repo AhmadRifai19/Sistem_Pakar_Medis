@@ -1,0 +1,57 @@
+<!-- templates/basis_pengetahuan.html -->
+{% extends 'base.html' %}
+{% block content %}
+<div class="max-w-5xl mx-auto">
+    <p class="text-gray-500 mb-4">Beranda / Basis Pengetahuan</p>
+    <h2 class="text-4xl font-bold mb-4">Basis Pengetahuan</h2>
+    <p class="text-gray-600 mb-10">Delapan aturan JIKA-MAKA yang membentuk penalaran sistem ini. Aturan berantai saling terhubung membentuk diagnosa akhir.</p>
+
+    <!-- Badge Keterangan -->
+    <div class="flex gap-4 mb-8">
+        <span class="px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">● Diagnosa Akhir</span>
+        <span class="px-4 py-2 bg-gray-100 text-gray-600 rounded-full text-xs font-bold">● Kesimpulan Antara</span>
+    </div>
+
+    <!-- Tabel Aturan -->
+    <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
+        <table class="w-full text-sm">
+            <thead class="bg-gray-50 border-b">
+                <tr>
+                    <th class="text-left p-4 font-bold text-gray-700">Kode</th>
+                    <th class="text-left p-4 font-bold text-gray-700">JIKA (Kondisi)</th>
+                    <th class="text-left p-4 font-bold text-gray-700">MAKA (Kesimpulan)</th>
+                    <th class="text-left p-4 font-bold text-gray-700">Jenis</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for aturan in aturan_list %}
+                <tr class="border-b last:border-0 hover:bg-gray-50 transition">
+                    <td class="p-4 font-mono font-bold text-primary">{{ aturan.kode }}</td>
+                    <td class="p-4 text-gray-600">{{ aturan.kondisi }}</td>
+                    <td class="p-4 font-semibold">{{ aturan.kesimpulan }}</td>
+                    <td class="p-4">
+                        <span class="px-3 py-1 rounded-full text-xs font-bold {% if aturan.jenis == 'Diagnosa Akhir' %}bg-blue-100 text-blue-700{% else %}bg-gray-100 text-gray-600{% endif %}">
+                            {{ aturan.jenis }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Rantai Aturan -->
+    <div class="mt-10 bg-blue-50 p-8 rounded-2xl">
+        <h3 class="font-bold text-lg mb-4">Alur Rantai Aturan</h3>
+        <div class="flex flex-wrap items-center gap-2 text-sm text-gray-600">
+            <span class="px-3 py-1 bg-white rounded-full border">R01: Suhu ≥ 38.0 °C (100.4 °F) → Demam</span>
+            <span class="text-primary font-bold">→</span>
+            <span class="px-3 py-1 bg-white rounded-full border">R03: Batuk = Kuat → Batuk Intens</span>
+            <span class="text-primary font-bold">→</span>
+            <span class="px-3 py-1 bg-white rounded-full border">R05: Demam + Batuk Intens → Kombinasi</span>
+            <span class="text-primary font-bold">→</span>
+            <span class="px-3 py-1 bg-white rounded-full border">R07: Kombinasi → RISIKO TINGGI</span>
+        </div>
+    </div>
+</div>
+{% endblock %}

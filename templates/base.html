@@ -1,0 +1,49 @@
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartHealth - Sistem Pakar COVID-19</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: { 
+                    colors: { primary: '#2563EB', success: '#16A34A', warning: '#F59E0B', danger: '#DC2626' },
+                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 flex min-h-screen text-gray-900">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white border-r border-gray-100 p-6 hidden md:block flex-shrink-0 shadow-sm">
+        <h1 class="text-2xl font-black text-primary mb-10 tracking-tighter">🩺 SmartHealth</h1>
+        <nav class="space-y-1">
+            <a href="{% url 'beranda' %}" class="block p-3 font-semibold text-gray-600 hover:bg-blue-50 hover:text-primary rounded-xl transition">Beranda</a>
+            <a href="{% url 'konsultasi' %}" class="block p-3 font-semibold text-gray-600 hover:bg-blue-50 hover:text-primary rounded-xl transition">Konsultasi</a>
+            <a href="{% url 'basis_pengetahuan' %}" class="block p-3 font-semibold text-gray-600 hover:bg-blue-50 hover:text-primary rounded-xl transition">Basis Pengetahuan</a>
+            <a href="{% url 'uji_dugaan' %}" class="block p-3 font-semibold text-gray-600 hover:bg-blue-50 hover:text-primary rounded-xl transition">Uji Dugaan</a>
+            <a href="{% url 'statistik' %}" class="block p-3 font-semibold text-gray-600 hover:bg-blue-50 hover:text-primary rounded-xl transition">Dashboard Statistik</a>
+            <a href="{% url 'dataset' %}" class="block p-3 font-semibold text-gray-600 hover:bg-blue-50 hover:text-primary rounded-xl transition">Dataset</a>
+        </nav>
+        <div class="mt-10 p-4 bg-amber-50 border border-amber-100 rounded-2xl">
+            <p class="text-[10px] font-bold text-amber-800 mb-1 uppercase tracking-wider">⚠️ Disclaimer</p>
+            <p class="text-[10px] text-amber-700 leading-relaxed">Aplikasi edukasi, bukan pengganti diagnosis dokter.</p>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-4 md:p-10 max-w-7xl mx-auto w-full">
+        {% block content %}{% endblock %}
+        
+        <footer class="mt-16 pt-8 border-t border-gray-200 text-center md:text-left">
+            <p class="text-[11px] text-gray-400">
+                © 2026 SmartHealth COVID-19 Expert System · Ahmad Rifai (253307049) · Politeknik Negeri Madiun.
+            </p>
+        </footer>
+    </main>
+</body>
+</html>

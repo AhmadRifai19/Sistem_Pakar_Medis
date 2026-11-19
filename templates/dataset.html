@@ -1,0 +1,50 @@
+<!-- templates/dataset.html -->
+{% extends 'base.html' %}
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <h2 class="text-3xl font-bold mb-6">Data Pasien ({{ total }})</h2>
+    <div class="bg-white rounded-2xl border shadow-sm overflow-hidden">
+        <table class="w-full text-left">
+            <thead class="bg-gray-50 border-b">
+                <tr>
+                    <th class="p-4 font-semibold text-gray-700">Nama</th>
+                    <th class="p-4 font-semibold text-gray-700">Usia</th>
+                    <th class="p-4 font-semibold text-gray-700">Suhu (°C / °F)</th>
+                    <th class="p-4 font-semibold text-gray-700">Batuk</th>
+                    <th class="p-4 font-semibold text-gray-700">Risiko</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y">
+                {% for p in page_obj %}
+                <tr>
+                    <td class="p-4">{{ p.nama }}</td>
+                    <td class="p-4">{{ p.usia }} th</td>
+                    <td class="p-4 font-medium">{{ p.fever_c }} °C <span class="text-xs text-gray-400 font-normal">({{ p.fever }} °F)</span></td>
+                    <td class="p-4">{{ p.cough }}</td>
+                    <td class="p-4">
+                        <span class="px-2 py-1 rounded-full text-xs font-bold 
+                            {% if p.risiko == 'Tinggi' %}bg-red-100 text-red-700
+                            {% elif p.risiko == 'Sedang' %}bg-amber-100 text-amber-700
+                            {% else %}bg-green-100 text-green-700{% endif %}">
+                            {{ p.risiko }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="mt-6 flex justify-center gap-2">
+        {% if page_obj.has_previous %}
+            <a href="?page=1" class="px-4 py-2 bg-white border rounded">First</a>
+            <a href="?page={{ page_obj.previous_page_number }}" class="px-4 py-2 bg-white border rounded">Prev</a>
+        {% endif %}
+        <span class="px-4 py-2 text-gray-600">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="px-4 py-2 bg-white border rounded">Next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}" class="px-4 py-2 bg-white border rounded">Last</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

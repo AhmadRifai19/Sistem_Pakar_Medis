@@ -1,0 +1,39 @@
+<!-- templates/beranda.html -->
+{% extends 'base.html' %}
+{% block content %}
+<div class="max-w-4xl mx-auto py-10">
+    <div class="text-center mb-16">
+        <span class="bg-blue-100 text-blue-700 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest mb-4 inline-block">Sistem Pakar Berbasis Forward Chaining</span>
+        <h1 class="text-5xl font-black text-gray-900 mb-6 tracking-tight">Deteksi dini dengan<br><span class="text-primary">logika cerdas.</span></h1>
+        <p class="text-lg text-gray-500 max-w-2xl mx-auto mb-10 leading-relaxed">
+            Sistem Pakar Skrining COVID-19 yang menggabungkan basis pengetahuan pakar dan logika fuzzy untuk hasil diagnosa yang lebih presisi dan transparan.
+        </p>
+        <div class="flex flex-wrap justify-center gap-4">
+            <a href="{% url 'konsultasi' %}" class="bg-primary text-white font-bold py-4 px-8 rounded-2xl shadow-xl shadow-blue-200 hover:scale-105 transition-transform">
+                Mulai Konsultasi ➔
+            </a>
+            <a href="{% url 'basis_pengetahuan' %}" class="bg-white text-gray-700 font-bold py-4 px-8 rounded-2xl border border-gray-200 hover:bg-gray-50 transition">
+                Lihat Basis Aturan
+            </a>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
+            <div class="text-3xl mb-4">🔬</div>
+            <h3 class="font-bold text-gray-900 mb-2">Penalaran Berantai</h3>
+            <p class="text-sm text-gray-500 leading-relaxed">Menggunakan Forward Chaining untuk mencocokkan gejala dengan basis pengetahuan medis.</p>
+        </div>
+        <div class="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
+            <div class="text-3xl mb-4">📉</div>
+            <h3 class="font-bold text-gray-900 mb-2">Logika Fuzzy</h3>
+            <p class="text-sm text-gray-500 leading-relaxed">Perhitungan derajat keanggotaan suhu tubuh untuk hasil yang halus dan tidak kaku.</p>
+        </div>
+        <div class="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
+            <div class="text-3xl mb-4">🤖</div>
+            <h3 class="font-bold text-gray-900 mb-2">Analisis AI</h3>
+            <p class="text-sm text-gray-500 leading-relaxed">Dukungan AI Groq untuk menjelaskan statistik dan grafik secara naratif ilmiah.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,117 @@
+<!-- templates/hasil.html -->
+{% extends 'base.html' %}
+{% block content %}
+<div class="max-w-5xl mx-auto">
+    <p class="text-gray-500 mb-6">Beranda / Konsultasi / Hasil</p>
+    <h2 class="text-4xl font-bold mb-2">Hasil skrining Anda</h2>
+    <p class="text-gray-500 mb-8">Pahami hasilnya. Telusuri alasannya. Tentukan langkah Anda.</p>
+
+    <!-- Kartu Status Risiko -->
+    <div class="p-8 rounded-2xl mb-8 border-2 {% if hasil.risiko == 'Tinggi' %}bg-red-50 border-red-200{% else %}bg-green-50 border-green-200{% endif %}">
+        <div class="flex justify-between items-start">
+            <div>
+                <p class="font-bold text-sm tracking-widest {% if hasil.risiko == 'Tinggi' %}text-red-700{% else %}text-green-700{% endif %} mb-2">
+                    ! &nbsp; RISIKO {{ hasil.risiko|upper }}
+                </p>
+                <h3 class="text-3xl font-bold {% if hasil.risiko == 'Tinggi' %}text-red-800{% else %}text-green-800{% endif %}">
+                    {% if hasil.risiko == 'Tinggi' %}Indikasi COVID-19{% else %}Tidak Indikasi COVID-19{% endif %}
+                </h3>
+                <p class="text-sm text-gray-600 mt-3 max-w-2xl">{{ hasil.alasan }}</p>
+            </div>
+        </div>
+
+        <div class="mt-6">
+            <div class="flex justify-between text-sm mb-2">
+                <span class="font-semibold">Skor keyakinan</span>
+                <span class="font-bold {% if hasil.risiko == 'Tinggi' %}text-red-700{% else %}text-green-700{% endif %}">{{ hasil.keyakinan }}%</span>
+            </div>
+            <div class="h-2 bg-white rounded-full overflow-hidden">
+                <div class="h-full rounded-full {% if hasil.risiko == 'Tinggi' %}bg-red-600{% else %}bg-green-600{% endif %}" style="width: {{ hasil.keyakinan }}%"></div>
+            </div>
+            <p class="text-[10px] text-gray-400 mt-2">Simulasi antarmuka · bukan probabilitas klinis. Metode skor belum ditentukan.</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="md:col-span-2 space-y-8">
+            <!-- Ringkasan Input -->
+            <div class="bg-white p-8 rounded-2xl shadow-sm border">
+                <h4 class="text-xl font-bold mb-6">Ringkasan input</h4>
+                <dl class="space-y-4 text-sm">
+                    <div class="flex justify-between"><dt class="text-gray-500">Usia</dt><dd class="font-semibold">{{ hasil.usia }} tahun</dd></div>
+                    <div class="flex justify-between"><dt class="text-gray-500">Jenis kelamin</dt><dd class="font-semibold">{{ hasil.gender }}</dd></div>
+                    <div class="flex justify-between">
+                        <dt class="text-gray-500">Suhu tubuh</dt>
+                        <dd class="font-semibold">{{ hasil.fever_c }} °C <span class="text-xs text-gray-400 font-normal">({{ hasil.fever }} °F)</span></dd>
+                    </div>
+                    <div class="flex justify-between"><dt class="text-gray-500">Batuk</dt><dd class="font-semibold">{{ hasil.cough }}</dd></div>
+                    <div class="flex justify-between"><dt class="text-gray-500">Kota</dt><dd class="font-semibold">{{ hasil.city }}</dd></div>
+                </dl>
+            </div>
+
+            <!-- Jejak Penalaran (Forward Chaining) -->
+            <div class="bg-white p-8 rounded-2xl shadow-sm border">
+                <h4 class="text-2xl font-bold mb-2">Mengapa hasil ini muncul?</h4>
+                <p class="text-xs font-bold text-primary tracking-wider mb-1">FORWARD CHAINING · {{ hasil.jumlah_terpicu }} dari {{ hasil.total_aturan }} aturan terpicu</p>
+                <p class="text-sm text-gray-500 mb-6">Fakta → kesimpulan antara → hasil skrining</p>
+
+                <div class="space-y-3">
+                    {% for aturan in hasil.aturan %}
+                    <div class="p-4 rounded-xl border {% if aturan.terpicu %}bg-green-50 border-green-100{% else %}bg-gray-50 border-gray-100{% endif %}">
+                        <p class="font-bold text-sm mb-2 {% if aturan.terpicu %}text-green-700{% else %}text-gray-400{% endif %}">
+                            {% if aturan.terpicu %}✓{% else %}—{% endif %} {{ aturan.kode }} · {% if aturan.terpicu %}Terpicu{% else %}Tidak terpicu{% endif %}
+                        </p>
+                        <p class="text-xs text-gray-600 leading-relaxed">
+                            JIKA {{ aturan.kondisi }}<br>MAKA {{ aturan.kesimpulan }}
+                        </p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Kolom Kanan -->
+        <div class="space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border">
+                <h4 class="text-lg font-bold mb-5">Langkah yang disarankan</h4>
+                <div class="space-y-5">
+                    {% for langkah in hasil.saran %}
+                    <div>
+                        <p class="font-bold text-sm text-primary mb-1">{{ langkah.nomor }} {{ langkah.judul }}</p>
+                        <p class="text-xs text-gray-500 leading-relaxed">{{ langkah.deskripsi }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="bg-yellow-50 p-6 rounded-2xl border border-yellow-100">
+                <h4 class="font-bold text-yellow-800 mb-2">Jangan tunda pertolongan</h4>
+                <p class="text-xs text-yellow-700 leading-relaxed">Jika sesak napas atau kondisi memburuk, segera hubungi fasilitas kesehatan.</p>
+            </div>
+
+            <a href="{% url 'konsultasi' %}" class="block w-full bg-primary text-white font-bold py-4 rounded-xl text-center shadow-lg hover:bg-blue-700 transition">Konsultasi Ulang</a>
+            <button type="button" onclick="window.print()" class="w-full border border-gray-300 font-bold py-4 rounded-xl text-center hover:bg-gray-50 transition flex items-center justify-center gap-2">
+                <span>🖨️</span> Cetak Hasil Skrining
+            </button>
+            <p class="text-[10px] text-gray-400 text-center">Untuk edukasi, bukan pengganti diagnosis. Selalu sarankan dokter.</p>
+        </div>
+
+        <div class="md:col-span-3">
+            {% include 'grafik_suhu_chart.html' %}
+
+            <div class="mt-6 bg-white p-5 rounded-2xl border border-blue-200 shadow-sm">
+                <h5 class="text-sm font-bold text-center text-gray-800 mb-2">📊 Analisis Transisi Halus Suhu Tubuh (Fuzzy vs Crisp)</h5>
+                <p class="text-xs text-gray-500 text-center leading-relaxed mb-3">
+                    Bandingkan logika tegas (cut-off &ge; 38°C) dengan derajat keanggotaan fuzzy pada suhu pasien yang baru diinput.
+                </p>
+                <p class="text-xs text-gray-500 text-center">
+                    Suhu Pasien: <span class="font-semibold text-primary">{{ hasil.fever }} °F / {{ hasil.fever_c }} °C</span>
+                </p>
+                <p class="text-xs text-gray-500 text-center">
+                    Derajat keanggotaan fuzzy: <span class="font-semibold text-red-600" id="fever_fuzzy_value_display"></span>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

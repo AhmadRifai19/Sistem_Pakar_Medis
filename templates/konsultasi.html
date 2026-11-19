@@ -1,0 +1,137 @@
+<!-- templates/konsultasi.html -->
+{% extends 'base.html' %}
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <p class="text-gray-500 mb-8">Beranda / Konsultasi</p>
+    <h2 class="text-4xl font-bold mb-4">Kenali gejala, pahami risikonya.</h2>
+    <p class="text-gray-600 mb-12">Isi kondisi yang Anda rasakan. Sistem akan menjelaskan setiap langkah penalarannya.</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="md:col-span-2 bg-white p-8 rounded-2xl shadow-sm border">
+            <h3 class="text-2xl font-bold mb-2">Konsultasi kesehatan</h3>
+            <p class="text-gray-400 text-sm mb-8">Semua data wajib diisi, kecuali nama.</p>
+
+            <form action="{% url 'hasil' %}" method="POST" class="space-y-6">
+                {% csrf_token %}
+                <div>
+                    <label class="block font-semibold mb-2">Nama (opsional)</label>
+                    <input type="text" name="nama" class="w-full p-3 border rounded-xl" placeholder="Masukkan nama Anda">
+                </div>
+
+                <div>
+                    <label class="flex justify-between font-semibold mb-2">
+                        <span>Usia</span>
+                        <span id="usia_val" class="text-primary">24 tahun</span>
+                    </label>
+                    <input type="range" name="usia" min="0" max="100" value="24" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary" oninput="document.getElementById('usia_val').innerText = this.value + ' tahun'">
+                </div>
+
+                <div>
+                    <label class="block font-semibold mb-2">Jenis Kelamin</label>
+                    <select name="gender" id="gender_select" class="w-full p-3 border rounded-xl bg-white outline-none focus:border-primary transition cursor-pointer">
+                        <option value="Perempuan" selected>Perempuan</option>
+                        <option value="Laki-laki">Laki-laki</option>
+                    </select>
+                </div>
+
+                <!-- Kartu Suhu -->
+                <div class="bg-blue-50/40 p-5 rounded-2xl border border-blue-200">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="text-2xl">🌡️</span>
+                        <h4 class="font-bold text-lg">Suhu Tubuh</h4>
+                    </div>
+                    <div class="flex justify-between text-xs text-gray-600 mb-2">
+                        <span>35.6°C (96°F)</span>
+                        <span class="text-primary font-semibold">Batas Demam: 38.0°C (100.4°F)</span>
+                        <span>40.0°C (104°F)</span>
+                    </div>
+                    <input type="range" name="fever" min="96.0" max="104.0" step="0.1" value="101.2" class="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary" oninput="
+                        const f = parseFloat(this.value);
+                        const c = ((f - 32) * 5 / 9).toFixed(1);
+                        document.getElementById('fever_val').innerText = f.toFixed(1);
+                        document.getElementById('fever_val_c').innerText = c;
+                        const batas = 100.4;
+                        const label = document.getElementById('fever_label');
+                        if (f < batas) label.classList.add('hidden');
+                        else label.classList.remove('hidden');
+                    ">
+                    <div class="flex justify-between text-base font-bold mt-2">
+                        <span id="fever_val">101.2 °F</span>
+                        <span id="fever_val_c" class="text-primary">38.4 °C</span>
+                    </div>
+                    <div id="fever_label" class="text-[11px] text-red-600 mt-1">
+                        ⚠️ Demam ≥ 38.0°C (≥ 100.4°F)
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-semibold mb-3">Intensitas batuk</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <label class="flex items-center justify-center p-4 border rounded-xl cursor-pointer hover:bg-blue-50 transition">
+                            <input type="radio" name="cough" value="Mild" class="mr-3"> Ringan
+                        </label>
+                        <label class="flex items-center justify-center p-4 border-2 border-primary bg-blue-50 rounded-xl cursor-pointer">
+                            <input type="radio" name="cough" value="Strong" class="mr-3" checked> Kuat
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <label class="block font-semibold mb-2">Kota</label>
+                    <select name="city" id="city_select" class="w-full p-3 border rounded-xl bg-white outline-none focus:border-primary transition cursor-pointer" onchange="toggleCustomCity(this)">
+                        {% for k in daftar_kota %}
+                        <option value="{{ k }}">{{ k }}</option>
+                        {% endfor %}
+                        <option value="other" class="font-bold text-primary">➕ Tambah Lokasi / Kota Baru...</option>
+                    </select>
+
+                    <div id="custom_city_box" class="mt-3 hidden transition-all duration-300">
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Ketik Nama Lokasi / Kota Baru:</label>
+                        <div class="relative">
+                            <input type="text" name="custom_city" id="custom_city_input" class="w-full p-3 pl-10 border-2 border-dashed border-primary rounded-xl bg-blue-50/50 outline-none focus:bg-white focus:border-solid focus:border-primary text-gray-800 transition" placeholder="Contoh: Madiun, Surabaya, Jakarta...">
+                            <span class="absolute left-3 top-3.5 text-gray-400">📍</span>
+                        </div>
+                        <p class="text-[11px] text-gray-400 mt-1">Kota baru akan langsung otomatis tersimpan ke database.</p>
+                    </div>
+                </div>
+
+                <script>
+                function toggleCustomCity(selectElem) {
+                    const box = document.getElementById('custom_city_box');
+                    const input = document.getElementById('custom_city_input');
+                    if (selectElem.value === 'other') {
+                        box.classList.remove('hidden');
+                        input.focus();
+                        input.required = true;
+                    } else {
+                        box.classList.add('hidden');
+                        input.required = false;
+                        input.value = '';
+                    }
+                }
+                </script>
+
+                <button type="submit" class="w-full bg-primary text-white font-bold py-4 rounded-xl shadow-lg hover:bg-blue-700 transition">
+                    Diagnosa Sekarang
+                </button>
+            </form>
+        </div>
+
+        <!-- Panduan Sidebar -->
+        <div class="space-y-6">
+            <div class="bg-blue-50 p-6 rounded-2xl">
+                <h4 class="text-xl font-bold mb-4">Bukan sekadar hasil. Ada alasan di baliknya.</h4>
+                <div class="space-y-4 text-sm text-gray-600">
+                    <div><p class="font-bold text-gray-800">01 Mulai dari fakta</p><p>Usia, suhu, batuk, dan profil Anda.</p></div>
+                    <div><p class="font-bold text-gray-800">02 Hubungkan aturan</p><p>Fakta memicu kesimpulan antara.</p></div>
+                    <div><p class="font-bold text-gray-800">03 Lihat penjelasan</p><p>Telusuri alasan kesimpulan akhir.</p></div>
+                </div>
+            </div>
+            <div class="bg-yellow-50 p-6 rounded-2xl border border-yellow-100">
+                <h4 class="font-bold text-yellow-800 mb-2">Utamakan keselamatan</h4>
+                <p class="text-xs text-yellow-700 leading-relaxed">Jika sesak napas atau kondisi memburuk, segera hubungi fasilitas kesehatan. Jangan menunggu hasil skrining.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

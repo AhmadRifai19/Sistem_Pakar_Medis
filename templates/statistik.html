@@ -1,0 +1,107 @@
+<!-- templates/statistik.html -->
+{% extends 'base.html' %}
+{% block content %}
+<div class="max-w-5xl mx-auto">
+    <p class="text-gray-500 mb-4">Beranda / Dashboard Statistik</p>
+    <h2 class="text-4xl font-bold mb-4">Dashboard Statistik</h2>
+    <p class="text-gray-600 mb-10">Eksplorasi dataset 1.000 pasien COVID-19 yang menjadi dasar sistem pakar ini.</p>
+
+    <!-- Kartu Angka -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
+        <div class="bg-white p-6 rounded-2xl border shadow-sm text-center">
+            <p class="text-4xl font-bold text-primary">{{ total_pasien }}</p>
+            <p class="text-gray-500 text-sm mt-1">Total Pasien</p>
+        </div>
+        <div class="bg-white p-6 rounded-2xl border shadow-sm text-center">
+            <p class="text-4xl font-bold text-red-600">{{ jumlah_tinggi }}</p>
+            <p class="text-gray-500 text-sm mt-1">Risiko Tinggi</p>
+        </div>
+        <div class="bg-white p-6 rounded-2xl border shadow-sm text-center">
+            <p class="text-4xl font-bold text-amber-500">{{ jumlah_sedang }}</p>
+            <p class="text-gray-500 text-sm mt-1">Risiko Sedang</p>
+        </div>
+        <div class="bg-white p-6 rounded-2xl border shadow-sm text-center">
+            <p class="text-4xl font-bold text-gray-700">{{ rata_suhu_c }}°C</p>
+            <p class="text-gray-500 text-sm mt-1">Rata-rata Suhu <span class="text-xs text-gray-400">({{ rata_suhu }}°F)</span></p>
+        </div>
+    </div>
+
+    <!-- Grafik Placeholder -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+        <div class="bg-white p-8 rounded-2xl border shadow-sm">
+            <h3 class="font-bold text-lg mb-4">Distribusi Kasus per Kota</h3>
+            <div class="space-y-3">
+                {% for kota in distribusi_kota %}
+                <div>
+                    <div class="flex justify-between text-sm mb-1">
+                        <span>{{ kota.nama }}</span>
+                        <span class="font-bold">{{ kota.jumlah }} pasien</span>
+                    </div>
+                    <div class="h-3 bg-gray-100 rounded-full overflow-hidden">
+                        <div class="h-full bg-primary rounded-full" style="width: {{ kota.persen }}%"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="bg-white p-8 rounded-2xl border shadow-sm">
+            <h3 class="font-bold text-lg mb-4">Proporsi Tingkat Risiko</h3>
+            <canvas id="riskPieChart" class="w-full max-w-xs mx-auto"></canvas>
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+                const ctx = document.getElementById('riskPieChart').getContext('2d');
+                const data = {
+                    labels: ['Tinggi', 'Sedang', 'Rendah'],
+                    datasets: [{
+                        data: [{{ persen_tinggi }}, {{ persen_sedang }}, {{ persen_rendah }}],
+                        backgroundColor: ['#DC2626', '#F59E0B', '#16A34A'],
+                        hoverOffset: 4
+                    }]
+                };
+                new Chart(ctx, {
+                    type: 'pie',
+                    data: data,
+                    options: {
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const label = context.label || '';
+                                        const value = context.parsed;
+                                        const total = {{ total_pasien }};
+                                        const count = Math.round(total * value / 100);
+                                        return `${label}: ${value}% (${count} pasien)`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            </script>
+        </div>
+    </div>
+
+    <!-- Kotak Penjelasan Ilmiah dari AI Groq (seperti di Tugas P06) -->
+    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl p-8 mb-10 shadow-sm">
+        <div class="flex items-center gap-3 mb-4">
+            <span class="p-2 bg-primary text-white rounded-xl text-lg shadow-sm">🤖</span>
+            <div>
+                <h3 class="font-bold text-lg text-gray-800">Penjelasan Grafik dari AI Groq</h3>
+                <p class="text-xs text-primary font-semibold">ANALISIS ILMIAH OTOMATIS · ADAPTASI DARI TUGAS P06 SISTEM CERDAS</p>
+            </div>
+        </div>
+        <div class="text-gray-700 text-sm leading-relaxed space-y-3 border-t border-blue-100 pt-4">
+            {{ penjelasan_ai|linebreaks }}
+        </div>
+    </div>
+
+    <!-- Catatan Sumber -->
+    <div class="bg-gray-50 p-6 rounded-xl border flex items-center justify-between">
+        <p class="text-sm text-gray-500">
+            <strong>Sumber Data:</strong> covid_dataset.csv · 1.000 record pasien · Berdasarkan aturan Sistem Cerdas.
+        </p>
+        <a href="{% url 'dataset' %}" class="px-4 py-2 bg-primary text-white text-sm font-semibold rounded-lg hover:bg-emerald-700 transition">Lihat Tabel Dataset &rarr;</a>
+    </div>
+</div>
+{% endblock %}
